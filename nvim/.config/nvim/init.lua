@@ -60,7 +60,8 @@ vim.pack.add({
   "https://github.com/lewis6991/gitsigns.nvim",
   "https://github.com/tpope/vim-surround",
   "https://github.com/tpope/vim-repeat",
-  "https://github.com/towolf/vim-helm"
+  "https://github.com/towolf/vim-helm",
+  "https://github.com/stevearc/conform.nvim",
 })
 
 vim.lsp.config("yamlls", {
@@ -124,8 +125,18 @@ vim.api.nvim_create_autocmd("TermClose", {
     vim.api.nvim_buf_delete(a.buf, { force = true })
   end,
 })
+require("conform").setup({
+  formatters_by_ft = {
+    python = { "ruff_format" },
+    lua = { "stylua" },
+    terraform = { "terraform_fmt" },
+  },
+  format_on_save = {
+    timeout_ms = 1000,
+    lsp_format = "fallback",
+  }
+})
 
-local fmt_group = vim.api.nvim_create_augroup("LspFormatOnSave", { clear = true })
 vim.api.nvim_create_autocmd("LspAttach", {
   callback = function(ev)
     local client = vim.lsp.get_client_by_id(ev.data.client_id)
@@ -133,16 +144,6 @@ vim.api.nvim_create_autocmd("LspAttach", {
 
     if client and client:supports_method("textDocument/completion") then
       vim.lsp.completion.enable(true, client.id, ev.buf, { autotrigger = false })
-    end
-    if client:supports_method("textDocument/formatting") then
-      vim.api.nvim_clear_autocmds({ group = fmt_group, buffer = ev.buf })
-      vim.api.nvim_create_autocmd("BufWritePre", {
-        group = fmt_group,
-        buffer = ev.buf,
-        callback = function()
-          vim.lsp.buf.format({ bufnr = ev.buf, id = client.id, async = false })
-        end,
-      })
     end
   end,
 })
