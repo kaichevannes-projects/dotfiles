@@ -2,6 +2,7 @@ local servers = {
   "bashls",
   "gopls",
   "lua_ls",
+  "pyright",
   "terraformls",
   "yamlls",
 }
@@ -15,6 +16,7 @@ local parsers = {
   "helm",
   "lua",
   "powershell",
+  "python",
   "terraform",
   "yaml",
 }
