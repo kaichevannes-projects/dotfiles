@@ -1,24 +1,24 @@
 local servers = {
-  "bashls",
-  "gopls",
-  "lua_ls",
-  "pyright",
-  "terraformls",
-  "yamlls",
+	"bashls",
+	"gopls",
+	"lua_ls",
+	"pyright",
+	"terraformls",
+	"yamlls",
 }
 local parsers = {
-  "bash",
-  "diff",
-  "go",
-  "gomod",
-  "gowork",
-  "gotmpl",
-  "helm",
-  "lua",
-  "powershell",
-  "python",
-  "terraform",
-  "yaml",
+	"bash",
+	"diff",
+	"go",
+	"gomod",
+	"gowork",
+	"gotmpl",
+	"helm",
+	"lua",
+	"powershell",
+	"python",
+	"terraform",
+	"yaml",
 }
 
 vim.g.mapleader = " "
@@ -37,42 +37,42 @@ vim.o.signcolumn = "yes"
 vim.o.updatetime = 250
 vim.o.termguicolors = true
 
-vim.api.nvim_create_autocmd('PackChanged', {
-  callback = function(ev)
-    local name, kind = ev.data.spec.name, ev.data.kind
-    if name == 'telescope-fzf-native.nvim' and (kind == 'install' or kind == 'update') then
-      vim.system({ 'make' }, { cwd = ev.data.path })
-    end
-  end,
+vim.api.nvim_create_autocmd("PackChanged", {
+	callback = function(ev)
+		local name, kind = ev.data.spec.name, ev.data.kind
+		if name == "telescope-fzf-native.nvim" and (kind == "install" or kind == "update") then
+			vim.system({ "make" }, { cwd = ev.data.path })
+		end
+	end,
 })
 
 vim.pack.add({
-  "https://github.com/neovim/nvim-lspconfig",
-  "https://github.com/folke/lazydev.nvim",
-  "https://github.com/nvim-treesitter/nvim-treesitter",
-  "https://github.com/nvim-treesitter/nvim-treesitter-context",
-  "https://github.com/sainnhe/gruvbox-material",
-  "https://github.com/nvim-lua/plenary.nvim",
-  "https://github.com/nvim-telescope/telescope.nvim",
-  "https://github.com/nvim-telescope/telescope-fzf-native.nvim",
-  "https://github.com/mikavilpas/yazi.nvim",
-  "https://github.com/kdheepak/lazygit.nvim",
-  "https://github.com/lewis6991/gitsigns.nvim",
-  "https://github.com/tpope/vim-surround",
-  "https://github.com/tpope/vim-repeat",
-  "https://github.com/towolf/vim-helm",
-  "https://github.com/stevearc/conform.nvim",
+	"https://github.com/neovim/nvim-lspconfig",
+	"https://github.com/folke/lazydev.nvim",
+	"https://github.com/nvim-treesitter/nvim-treesitter",
+	"https://github.com/nvim-treesitter/nvim-treesitter-context",
+	"https://github.com/sainnhe/gruvbox-material",
+	"https://github.com/nvim-lua/plenary.nvim",
+	"https://github.com/nvim-telescope/telescope.nvim",
+	"https://github.com/nvim-telescope/telescope-fzf-native.nvim",
+	"https://github.com/mikavilpas/yazi.nvim",
+	"https://github.com/kdheepak/lazygit.nvim",
+	"https://github.com/lewis6991/gitsigns.nvim",
+	"https://github.com/tpope/vim-surround",
+	"https://github.com/tpope/vim-repeat",
+	"https://github.com/towolf/vim-helm",
+	"https://github.com/stevearc/conform.nvim",
 })
 
 vim.lsp.config("yamlls", {
-  settings = {
-    yaml = {
-      schemaStore = { enable = true },
-      schemas = {
-        ["https://json.schemastore.org/github-workflow.json"] = ".github/workflows/*.yaml",
-      }
-    }
-  }
+	settings = {
+		yaml = {
+			schemaStore = { enable = true },
+			schemas = {
+				["https://json.schemastore.org/github-workflow.json"] = ".github/workflows/*.yaml",
+			},
+		},
+	},
 })
 vim.lsp.enable(servers)
 vim.lsp.log.set_level(vim.log.levels.OFF)
@@ -88,71 +88,80 @@ vim.o.foldlevelstart = 99
 vim.o.foldenable = true
 vim.o.foldtext = ""
 vim.api.nvim_create_autocmd("FileType", {
-  callback = function()
-    if pcall(vim.treesitter.start) then
-      vim.wo.foldmethod = "expr"
-      vim.wo.foldexpr = "v:lua.vim.treesitter.foldexpr()"
-    end
-  end,
+	callback = function()
+		if pcall(vim.treesitter.start) then
+			vim.wo.foldmethod = "expr"
+			vim.wo.foldexpr = "v:lua.vim.treesitter.foldexpr()"
+		end
+	end,
 })
 require("treesitter-context").setup({
-  max_lines = 4,
-  multiline_threshold = 1,
+	max_lines = 4,
+	multiline_threshold = 1,
 })
 require("telescope").setup({})
-require("telescope").load_extension "fzf"
+require("telescope").load_extension("fzf")
 require("yazi").setup({
-  open_for_directories = true,
-  floating_window_scaling_factor = 1,
-  yazi_floating_window_border = "none",
+	open_for_directories = true,
+	floating_window_scaling_factor = 1,
+	yazi_floating_window_border = "none",
 })
 vim.g.loaded_netrwPlugin = 1
 require("gitsigns").setup({
-  on_attach = function(bufnr)
-    local gs = require("gitsigns")
-    local function map(mode, l, r) vim.keymap.set(mode, l, r, { buffer = bufnr }) end
-    map("n", "]c", function() gs.nav_hunk("next") end)
-    map("n", "[c", function() gs.nav_hunk("prev") end)
-  end,
+	on_attach = function(bufnr)
+		local gs = require("gitsigns")
+		local function map(mode, l, r)
+			vim.keymap.set(mode, l, r, { buffer = bufnr })
+		end
+		map("n", "]c", function()
+			gs.nav_hunk("next")
+		end)
+		map("n", "[c", function()
+			gs.nav_hunk("prev")
+		end)
+	end,
 })
 vim.g.lazygit_floating_window_scaling_factor = 1
 vim.g.lazygit_floating_window_border_chars = { "", "", "", "", "", "", "", "" }
 vim.g.lazygit_floating_window_use_plenary = 0
 vim.g.lazygit_use_neovim_remote = 0
 vim.api.nvim_create_autocmd("TermClose", {
-  pattern = "*lazygit*",
-  callback = function(a)
-    vim.api.nvim_buf_delete(a.buf, { force = true })
-  end,
+	pattern = "*lazygit*",
+	callback = function(a)
+		vim.api.nvim_buf_delete(a.buf, { force = true })
+	end,
 })
 require("conform").setup({
-  formatters_by_ft = {
-    python = { "ruff_format" },
-    lua = { "stylua" },
-    terraform = { "terraform_fmt" },
-  },
-  format_on_save = {
-    timeout_ms = 1000,
-    lsp_format = "fallback",
-  }
+	formatters_by_ft = {
+		json = { "jq" },
+		python = { "ruff_format" },
+		lua = { "stylua" },
+		terraform = { "terraform_fmt" },
+	},
+	format_on_save = {
+		timeout_ms = 1000,
+		lsp_format = "fallback",
+	},
 })
 
 vim.api.nvim_create_autocmd("LspAttach", {
-  callback = function(ev)
-    local client = vim.lsp.get_client_by_id(ev.data.client_id)
-    if not client then return end
+	callback = function(ev)
+		local client = vim.lsp.get_client_by_id(ev.data.client_id)
+		if not client then
+			return
+		end
 
-    if client and client:supports_method("textDocument/completion") then
-      vim.lsp.completion.enable(true, client.id, ev.buf, { autotrigger = false })
-    end
-  end,
+		if client and client:supports_method("textDocument/completion") then
+			vim.lsp.completion.enable(true, client.id, ev.buf, { autotrigger = false })
+		end
+	end,
 })
 vim.api.nvim_create_autocmd("FileType", {
-  pattern = "*",
-  callback = function()
-    vim.opt_local.formatoptions:append("r")
-    vim.opt_local.formatoptions:remove("o")
-  end,
+	pattern = "*",
+	callback = function()
+		vim.opt_local.formatoptions:append("r")
+		vim.opt_local.formatoptions:remove("o")
+	end,
 })
 
 vim.g.gruvbox_material_foreground = "mix"
@@ -170,7 +179,7 @@ vim.keymap.set("n", "<leader>e", "<cmd>Yazi<cr>")
 vim.keymap.set("n", "<C-g>", "<cmd>LazyGit<cr>")
 vim.keymap.set("n", "ga", "<C-^>")
 vim.keymap.set("n", "<leader>z", function()
-  vim.wo.foldcolumn = vim.wo.foldcolumn == "0" and "auto:8" or "0"
+	vim.wo.foldcolumn = vim.wo.foldcolumn == "0" and "auto:8" or "0"
 end)
 vim.keymap.set("n", "gd", vim.lsp.buf.definition)
 vim.keymap.set("n", "gD", vim.lsp.buf.declaration)
