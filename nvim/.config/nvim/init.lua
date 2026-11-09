@@ -14,6 +14,7 @@ local parsers = {
 	"gowork",
 	"gotmpl",
 	"helm",
+	"json",
 	"lua",
 	"powershell",
 	"python",
