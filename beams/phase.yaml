@@ -1,0 +1,74 @@
+version: v1
+metadata:
+  name: dev
+  rebuild_home_paths:
+    - /home/linuxbrew
+
+commands:
+  - comment: Install build tools and shell prerequisites
+    shell: |
+      set -eu
+      apt-get update
+      DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
+        build-essential file stow zsh
+      chsh -s /usr/bin/zsh beams
+
+  - comment: Install Homebrew and development tools
+    shell: |
+      set -eu
+      install -d -o beams -g beams /home/linuxbrew
+      curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh \
+        -o /tmp/install-homebrew.sh
+
+      sudo -u beams env HOME=/home/linuxbrew NONINTERACTIVE=1 bash <<'BREW'
+      set -eu
+      bash /tmp/install-homebrew.sh
+      eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
+      brew tap hashicorp/tap
+      brew install \
+        ripgrep fzf eza zoxide tmux yazi lazygit lnav \
+        kubernetes-cli kubectx helm hashicorp/tap/terraform \
+        neovim tree-sitter tree-sitter-cli \
+        bash-language-server gopls lua-language-server pyright \
+        terraform-ls yaml-language-server jq ruff stylua node
+      brew cleanup --prune=all
+      BREW
+
+      echo 'eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"' > /etc/profile.d/homebrew.sh
+
+  - comment: Install Oh My Zsh and its theme and plugins
+    shell: |
+      set -eu
+      git clone --depth=1 https://github.com/ohmyzsh/ohmyzsh.git /opt/oh-my-zsh
+      git clone --depth=1 https://github.com/romkatv/powerlevel10k.git \
+        /opt/oh-my-zsh/custom/themes/powerlevel10k
+      git clone --depth=1 https://github.com/zsh-users/zsh-autosuggestions.git \
+        /opt/oh-my-zsh/custom/plugins/zsh-autosuggestions
+      git clone --depth=1 https://github.com/zsh-users/zsh-syntax-highlighting.git \
+        /opt/oh-my-zsh/custom/plugins/zsh-syntax-highlighting
+
+services:
+  - name: setup-dotfiles
+    type: pre-start
+    context: user
+    shell: |
+      set -eu
+      sudo -E -H -u beams bash <<'DOTFILES'
+      set -eu
+      if [ ! -d "$HOME/dotfiles" ]; then
+        git clone https://github.com/kaichevannes-projects/dotfiles.git "$HOME/dotfiles"
+      fi
+
+      cd "$HOME/dotfiles"
+      stow --target="$HOME" -- */
+
+      if [ ! -f "$HOME/.oh-my-zsh/oh-my-zsh.sh" ]; then
+        mkdir -p "$HOME/.oh-my-zsh"
+        cp -R /opt/oh-my-zsh/. "$HOME/.oh-my-zsh"
+      fi
+
+      shellenv='eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"'
+      for rc in "$HOME/.bashrc" "$HOME/.zshenv"; do
+        grep -Fqx "$shellenv" "$rc" 2>/dev/null || printf '\n%s\n' "$shellenv" >> "$rc"
+      done
+      DOTFILES
