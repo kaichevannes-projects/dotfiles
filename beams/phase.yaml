@@ -71,6 +71,7 @@ services:
       fi
 
       cd "$HOME/dotfiles"
+      mkdir -p "$HOME/.pi"
       stow --target="$HOME" -- */
 
       if [ ! -f "$HOME/.oh-my-zsh/oh-my-zsh.sh" ]; then
