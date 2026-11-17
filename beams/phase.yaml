@@ -47,7 +47,10 @@ commands:
       git clone --depth=1 https://github.com/zsh-users/zsh-syntax-highlighting.git \
         /opt/oh-my-zsh/custom/plugins/zsh-syntax-highlighting
 
-  - comment: Install Pi coding agent
+services:
+  - name: install-pi
+    type: pre-start
+    context: user
     shell: |
       set -eu
       sudo -u beams env HOME=/home/beams bash <<'EOF'
@@ -56,7 +59,6 @@ commands:
       curl -fsSL https://pi.dev/install.sh | sh 
       EOF
 
-services:
   - name: setup-dotfiles
     type: pre-start
     context: user
